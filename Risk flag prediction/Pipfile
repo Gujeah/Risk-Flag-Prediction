@@ -1,0 +1,13 @@
+[packages]
+loguru = "*"
+mkdocs = "*"
+pip = "*"
+pytest = "*"
+python-dotenv = "*"
+ruff = "*"
+tqdm = "*"
+typer = "*"
+"risk_flag_prediction" ={editable = true, path = "."}
+
+[requires]
+python_version = "3.9.13"
