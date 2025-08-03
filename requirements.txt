@@ -1,6 +1,5 @@
 scikit-learn
 xgboost
-nltk
 PyYAML
 jupyter
 ipykernel
@@ -13,7 +12,6 @@ matplotlib
 mlflow
 dvc
 dvc[s3]
-nltk
 numpy
 pandas
 seaborn
