@@ -42,7 +42,7 @@ The project follows a standard MLOps lifecycle, as depicted in the workflow belo
                                                      +------------------+
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -57,7 +57,7 @@ The project follows a standard MLOps lifecycle, as depicted in the workflow belo
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/gujeah/Risk-Flag-Prediction.git](https://github.com/your_username/Risk-Flag-Prediction.git)
+    git clone https://github.com/gujeah/Risk-Flag-Prediction.git
     cd Risk-Flag-Prediction
     ```
 
