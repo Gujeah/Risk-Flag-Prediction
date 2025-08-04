@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-scikit-learn = "*"
 xgboost = "*"
 pyyaml = "*"
 jupyter = "*"
@@ -20,6 +19,7 @@ dvc = {extras = ["s3"], version = "*"}
 numpy = "*"
 pandas = "*"
 seaborn = "*"
+scikit-learn = "*"
 category-encoders = "*"
 
 [dev-packages]

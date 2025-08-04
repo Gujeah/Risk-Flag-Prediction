@@ -1,18 +1,19 @@
+# data_preprocessing.py
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import logging
 import os 
 from sklearn.preprocessing import LabelEncoder
-from category_encoders import TargetEncoder
+from sklearn.model_selection import StratifiedKFold
 
-#  Logging configuration
+# --- Logging configuration ---
 logger = logging.getLogger('data_preprocessing')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('preprocessing_errors.log')
-file_handler.setLevel(logging.DEBUG)
+console_handler.setLevel(logging.INFO)
+file_handler = logging.FileHandler('preprocessing.log')
+file_handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
@@ -21,7 +22,7 @@ logger.addHandler(file_handler)
 
 def load_raw_data(file_name: str, path: str) -> pd.DataFrame:
     """Loads a raw dataset from the specified path."""
-    file_path = os.path.join(path, 'raw', file_name)
+    file_path = os.path.join(path, file_name)
     try:
         df = pd.read_csv(file_path)
         logger.info('Raw data loaded from %s', file_path)
@@ -83,72 +84,97 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
         logger.error('Unexpected error during preprocessing: %s', e)
         raise
 
-def save_processed_data(df: pd.DataFrame, file_name: str, path: str) -> None:
-    """Saves a processed DataFrame to the specified path."""
+def save_data(df: pd.DataFrame, path: str) -> None:
+    """Save a DataFrame to a specified path."""
     try:
-        processed_data_path = os.path.join(path, 'processed')
-        os.makedirs(processed_data_path, exist_ok=True)
-        df.to_csv(os.path.join(processed_data_path, file_name), index=False)
-        logger.info('Processed data saved to %s', os.path.join(processed_data_path, file_name))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        df.to_csv(path, index=False)
+        logger.info('Data saved to %s', path)
     except Exception as e:
         logger.error('Unexpected error occurred while saving the data: %s', e)
         raise
 
-def main():
-    """Main function for the data preprocessing pipeline."""
-    try:
-        # Define the DVC raw and processed data paths
-        data_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data')
+def cross_validated_target_encode(df_train: pd.DataFrame, y_train: pd.Series, df_test: pd.DataFrame, col: str, n_splits: int = 5) -> tuple:
+    """Performs cross-validated target encoding for a given column."""
+    oof_train = pd.Series(np.nan, index=df_train.index)
+    kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
+    for tr_idx, val_idx in kf.split(df_train, y_train):
+        X_tr, X_val = df_train.iloc[tr_idx], df_train.iloc[val_idx]
+        y_tr = y_train.iloc[tr_idx]
+        
+        # Calculate target mean for each category in the training fold
+        target_means = y_tr.groupby(X_tr[col]).mean()
+        
+        # Map the target means to the validation fold
+        oof_train.iloc[val_idx] = X_val[col].map(target_means)
+
+    # Calculate the final target means on the full training data
+    final_target_means = y_train.groupby(df_train[col]).mean()
+    
+    # Map the final target means to the test data
+    oof_test = df_test[col].map(final_target_means)
+    
+    # Fill any NaNs (new categories in test data) with the global mean
+    global_mean = y_train.mean()
+    oof_test = oof_test.fillna(global_mean)
+    
+    return oof_train, oof_test
+
+if __name__ == '__main__':
+    # --- DVC input/output paths ---
+    base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
+    dvc_raw_path = os.path.join(base_path, 'data/raw')
+    dvc_processed_path = os.path.join(base_path, 'data/processed')
+
+    try:
         # Load raw data from the DVC raw directory
-        df_train_raw = load_raw_data('train.csv', data_base_path)
-        df_test_raw = load_raw_data('test.csv', data_base_path)
+        df_train_raw = load_raw_data('train.csv', dvc_raw_path)
+        df_test_raw = load_raw_data('test.csv', dvc_raw_path)
 
         # Preprocess both datasets
         df_train_preprocessed = preprocess(df_train_raw)
         df_test_preprocessed = preprocess(df_test_raw)
         
-        # --- Split features and target for encoders ---
-        X_train_orig = df_train_preprocessed.drop('risk_flag', axis=1)
-        y_train = df_train_preprocessed['risk_flag']
-        X_test_orig = df_test_preprocessed.drop('risk_flag', axis=1)
-        y_test = df_test_preprocessed['risk_flag']
+        # --- Split features and target for training data ---
+        X_train_full = df_train_preprocessed.drop('risk_flag', axis=1)
+        y_train_full = df_train_preprocessed['risk_flag']
+        
+        # --- Test data has no target variable ---
+        X_test_final = df_test_preprocessed.copy()
+        
+        # --- Cross-Validated Target Encoding ---
+        X_train_full['city_encoded'], X_test_final['city_encoded'] = cross_validated_target_encode(
+            df_train=X_train_full, y_train=y_train_full, df_test=X_test_final, col='city'
+        )
+        X_train_full['state_encoded'], X_test_final['state_encoded'] = cross_validated_target_encode(
+            df_train=X_train_full, y_train=y_train_full, df_test=X_test_final, col='state'
+        )
 
-        # --- Correct Target Encoding without Data Leakage ---
-        target_encoder_city = TargetEncoder(smoothing=10)
-        target_encoder_state = TargetEncoder(smoothing=10)
-        
-        target_encoder_city.fit(X_train_orig['city'], y_train)
-        target_encoder_state.fit(X_train_orig['state'], y_train)
-        
-        X_train_orig['city_encoded'] = target_encoder_city.transform(X_train_orig['city'])
-        X_test_orig['city_encoded'] = target_encoder_city.transform(X_test_orig['city'])
-        X_train_orig['state_encoded'] = target_encoder_state.transform(X_train_orig['state'])
-        X_test_orig['state_encoded'] = target_encoder_state.transform(X_test_orig['state'])
-        
+        # Perform Label Encoding on low-cardinality columns
         le_cols = ['married/single', 'house_ownership', 'car_ownership', 'profession_grouped']
         for col in le_cols:
             le = LabelEncoder()
-            if col in X_train_orig.columns:
-                X_train_orig[col] = le.fit_transform(X_train_orig[col])
-                X_test_orig[col] = le.transform(X_test_orig[col])
-
+            if col in X_train_full.columns:
+                X_train_full[col] = le.fit_transform(X_train_full[col])
+                if col in X_test_final.columns:
+                    X_test_final[col] = le.transform(X_test_final[col])
+        
+        # Final feature selection
         top_features = ['city_encoded', 'state_encoded', 'income_to_age', 'income_to_experience', 'stability_score', 'experience']
-        X_train_final = X_train_orig[top_features]
-        X_test_final = X_test_orig[top_features]
+        X_train_final = X_train_full[top_features]
+        X_test_final = X_test_final[top_features]
 
         # Save the processed data
-        train_data = pd.concat([X_train_final, y_train], axis=1)
-        test_data = pd.concat([X_test_final, y_test], axis=1)
+        train_data = pd.concat([X_train_final, y_train_full], axis=1)
+        test_data = X_test_final
         
-        save_processed_data(train_data, "train_processed.csv", data_base_path)
-        save_processed_data(test_data, "test_processed.csv", data_base_path)
+        save_data(train_data, os.path.join(dvc_processed_path, "train_processed.csv"))
+        save_data(test_data, os.path.join(dvc_processed_path, "test_processed.csv"))
         
         logger.info("Preprocessing pipeline completed successfully.")
 
     except Exception as e:
-        logger.critical('Preprocessing pipeline failed with a critical error: %s', e)
+        logger.critical('Preprocessing pipeline failed with a critical error: "%s"', e)
         print(f"Error: {e}")
-
-if __name__ == '__main__':
-    main()
+        exit(1)

@@ -1,0 +1,14 @@
+random_state: 42
+model:
+  lightgbm:
+    objective: binary
+    metric: f1
+    n_estimators: 931
+    learning_rate: 0.18688483085173365
+    num_leaves: 46
+    max_depth: 10
+    colsample_bytree: 0.7739790694850105
+    subsample: 0.551711133519051
+    reg_lambda: 0.8221391884536173
+    reg_alpha: 0.9275863975757927
+    seed: 42

@@ -1,0 +1,106 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 6f702d8d87d4b526782f5e312ac353ca
+      size: 2931
+    outs:
+    - path: data/raw/test.csv
+      hash: md5
+      md5: 3d54349dc1631c8f8502a286bd667fd6
+      size: 4213916
+    - path: data/raw/train.csv
+      hash: md5
+      md5: b0de726b587fad14f9dbbe7ff53304b1
+      size: 17396346
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+    - path: data/raw/test.csv
+      hash: md5
+      md5: 3d54349dc1631c8f8502a286bd667fd6
+      size: 4213916
+    - path: data/raw/train.csv
+      hash: md5
+      md5: b0de726b587fad14f9dbbe7ff53304b1
+      size: 17396346
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: c7c18abdbfafe892a5cf1dbe98ab682c
+      size: 8485
+    outs:
+    - path: data/processed/test_processed.csv
+      hash: md5
+      md5: af6d0107cd4f74609e2f03b43b94011d
+      size: 4599760
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 380a3800a67992fd4a885f859ae21133
+      size: 18844108
+  model_building:
+    cmd: python src/modeling/model_building.py
+    deps:
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 380a3800a67992fd4a885f859ae21133
+      size: 18844108
+    - path: params.yaml
+      hash: md5
+      md5: 413d8169132eee412854c63b9d82f5b9
+      size: 341
+    - path: src/modeling/model_building.py
+      hash: md5
+      md5: 55919b2333f98ef5c5d9094d90777cb0
+      size: 2644
+    outs:
+    - path: models/lightgbm_model.joblib
+      hash: md5
+      md5: bb082f90954d16a3dd95079f89611dcc
+      size: 4495444
+  model_evaluation:
+    cmd: python src/modeling/model_evaluation.py
+    deps:
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 380a3800a67992fd4a885f859ae21133
+      size: 18844108
+    - path: models/lightgbm_model.joblib
+      hash: md5
+      md5: bb082f90954d16a3dd95079f89611dcc
+      size: 4495444
+    - path: src/modeling/model_evaluation.py
+      hash: md5
+      md5: 6a08e9fcc940a4f4cabe7e287b324e9b
+      size: 5273
+    outs:
+    - path: metrics/validation_metrics.json
+      hash: md5
+      md5: f4b7595979987c1043bb730eba31fe5d
+      size: 192
+    - path: plots/confusion_matrix_validation.png
+      hash: md5
+      md5: 6bf332f07260c68de23572a088d2907d
+      size: 21079
+  model_prediction:
+    cmd: python src/modeling/model_prediction.py
+    deps:
+    - path: data/processed/test_processed.csv
+      hash: md5
+      md5: af6d0107cd4f74609e2f03b43b94011d
+      size: 4599760
+    - path: models/lightgbm_model.joblib
+      hash: md5
+      md5: bb082f90954d16a3dd95079f89611dcc
+      size: 4495444
+    - path: src/modeling/model_prediction.py
+      hash: md5
+      md5: afdb007292ef9e5fc787c9073f8ff244
+      size: 3205
+    outs:
+    - path: predictions/test_predictions.csv
+      hash: md5
+      md5: fc68e0f66137a354f6e92c184ddd67cf
+      size: 151222
