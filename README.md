@@ -41,3 +41,58 @@ The project follows a standard MLOps lifecycle, as depicted in the workflow belo
                                                      | Monitoring       |
                                                      +------------------+
 ```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+- `pipenv` package manager. You can install it using `pip install pipenv`.
+- [Docker](https://docs.docker.com/get-docker/) installed locally and on your AWS EC2 instance.
+- An AWS account with an EC2 instance, ECR repository, and IAM credentials configured.
+- An SSH key for connecting to your EC2 instance.
+
+### Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [https://github.com/gujeah/Risk-Flag-Prediction.git](https://github.com/your_username/Risk-Flag-Prediction.git)
+    cd Risk-Flag-Prediction
+    ```
+
+2.  **Install dependencies using Pipenv:**
+
+    ```bash
+    pipenv install
+    ```
+
+    This command will read the `Pipfile` and `Pipfile.lock` to create a virtual environment and install all necessary packages.
+
+3.  **Activate the virtual environment:**
+    ```bash
+    pipenv shell
+    ```
+
+### Set Up AWS & GitHub Secrets
+
+configure the necessary secrets in GitHub repository. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `ECR_REPOSITORY`, `EC2_HOST`, `EC2_USERNAME`, and `SSH_PRIVATE_KEY`.
+
+### Local Testing with Docker
+
+To ensure your application works correctly before a full deployment, you can build and run it locally using Docker.
+
+1.  **Build the Docker image:**
+
+    ```bash
+    docker build -t risk-flag-app .
+    ```
+
+2.  **Run the container:**
+
+    ```bash
+    docker run -d -p 5000:5000 --name my-risk-app risk-flag-app
+    ```
+
+3.  **Access the web interface:**
+    - Open your web browser and navigate to `http://localhost:5000`.
