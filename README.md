@@ -8,6 +8,76 @@ This project serves as a practical demonstration of key MLOps principles, from e
 
 ## 📈 Project Workflow & Architecture
 
+```
+.
+├── .dvc
+├── .github
+│   └── workflows
+│       └── cicd.yaml
+├── artifacts
+│   ├── city_global_mean.joblib
+│   ├── city_mapping.joblib
+│   ├── state_global_mean.joblib
+│   └── state_mapping.joblib
+├── data
+│   ├── processed
+│   │   ├── test_processed.csv
+│   │   └── train_processed.csv
+│   └── raw
+│       ├── test.csv
+│       └── train.csv
+├── docs
+├── flask_api
+│   ├── main.py
+│   └── templates
+│       └── index.html
+├── metrics
+│   └── validation_metrics.json
+├── models
+│   └── lightgbm_model.joblib
+├── notebooks
+├── plots
+│   └── confusion_matrix_validation.png
+├── predictions
+│   └── test_predictions.csv
+├── reports
+├── src
+│   ├── data
+│   │   ├── data_ingestion.py
+│   │   └── data_preprocessing.py
+│   └── modeling
+│       ├── model_building.py
+│       ├── model_evaluation.py
+│       ├── model_prediction.py
+│       ├── model_register.py
+│       ├── predict.py
+│       ├── train.py
+│       └── __init__.py
+├── .dvcignore
+├── .env
+├── .gitattributes
+├── .gitignore
+├── Dockerfile
+├── dvc.lock
+├── dvc.yaml
+├── ingestion_errors.log
+├── Makefile
+├── mlflow_run_info.json
+├── model_building.log
+├── model_evaluation.log
+├── model_prediction.log
+├── model_registration_errors.log
+├── params.yaml
+├── Pipfile
+├── Pipfile.lock
+├── preprocessing.log
+├── preprocessing_errors.log
+├── pyproject.toml
+├── README.md
+├── requirements.txt
+└── setup.py
+```
+
 The project follows a standard MLOps lifecycle, as depicted in the workflow below:
 
 1.  **Model Development:** The data preprocessing and model training logic are defined in a Python script.
