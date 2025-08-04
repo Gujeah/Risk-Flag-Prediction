@@ -104,3 +104,14 @@ stages:
       hash: md5
       md5: fc68e0f66137a354f6e92c184ddd67cf
       size: 151222
+  model_registration:
+    cmd: python src/modeling/model_register.py
+    deps:
+    - path: mlflow_run_info.json
+      hash: md5
+      md5: de0c9b1697443294ebbb07325d00406d
+      size: 105
+    - path: src/modeling/model_register.py
+      hash: md5
+      md5: adcb13848a068a4a622fbd2aaf03eedf
+      size: 2909
