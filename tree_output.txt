@@ -1,0 +1,205 @@
+Folder PATH listing
+Volume serial number is FE31-217E
+C:.
+|   .dvcignore
+|   .env
+|   .gitattributes
+|   .gitignore
+|   Dockerfile
+|   dvc.lock
+|   dvc.yaml
+|   ingestion_errors.log
+|   Makefile
+|   mlflow_run_info.json
+|   model_building.log
+|   model_evaluation.log
+|   model_prediction.log
+|   model_registration_errors.log
+|   params.yaml
+|   Pipfile
+|   Pipfile.lock
+|   preprocessing.log
+|   preprocessing_errors.log
+|   pyproject.toml
+|   README.md
+|   requirements.txt
+|   setup.py
+|   tree_output.txt
+|   
++---.dvc
+|   |   .gitignore
+|   |   config
+|   |   
+|   +---cache
+|   |   +---files
+|   |   |   \---md5
+|   |   |       +---38
+|   |   |       |       0a3800a67992fd4a885f859ae21133
+|   |   |       |       
+|   |   |       +---3d
+|   |   |       |       54349dc1631c8f8502a286bd667fd6
+|   |   |       |       
+|   |   |       +---6b
+|   |   |       |       f332f07260c68de23572a088d2907d
+|   |   |       |       
+|   |   |       +---af
+|   |   |       |       6d0107cd4f74609e2f03b43b94011d
+|   |   |       |       
+|   |   |       +---b0
+|   |   |       |       de726b587fad14f9dbbe7ff53304b1
+|   |   |       |       
+|   |   |       +---bb
+|   |   |       |       082f90954d16a3dd95079f89611dcc
+|   |   |       |       
+|   |   |       +---f0
+|   |   |       |       e75c9fd3fcba6351e887081d559e98
+|   |   |       |       
+|   |   |       +---f4
+|   |   |       |       b7595979987c1043bb730eba31fe5d
+|   |   |       |       
+|   |   |       \---fc
+|   |   |               68e0f66137a354f6e92c184ddd67cf
+|   |   |               
+|   |   \---runs
+|   |       +---2a
+|   |       |   \---2ae2bf05ddf6eb8c9e64cbc6782f1a05d541f16c745c56e26b50406d391591f9
+|   |       |           ca10523ae5f6c369240aa39569b96f5b76522cbc388009e4fb9da4e0b1e11f7b
+|   |       |           
+|   |       +---35
+|   |       |   \---3567afb80fe48c8aca5a528f5c490c6fbe21fba4133435c5090afab75648e238
+|   |       |           15396a44aabbf2cf4dc4ae0e9fc51a0402707679c946c30f91c235d2c286c6be
+|   |       |           
+|   |       +---3c
+|   |       |   \---3c079a5b374055d72ead2af108a847037185456119f598d6d26f491cc4068198
+|   |       |           c5014d1581f34a259017665e9f0e2ac094b123adcf727b7ff2f60ee43bf8dc72
+|   |       |           
+|   |       +---57
+|   |       |   \---57ead7eddc5b59b8d7625a2bfde01085f43eaf232ccc0ced46b6bb68b7121a13
+|   |       |           0665c2362a738f79730bedd26dd9e9f9ffb5345bd6c797ce7eed896f3f40a7c5
+|   |       |           
+|   |       +---58
+|   |       |   \---58a74fbd04039a15dbb918abf866be75877ee00830aadadb6e08fd5f08c3f646
+|   |       |           ef5308dd1967959475699b753a23f7b0dfcd56eba475e165dd214b1908cfa29a
+|   |       |           
+|   |       +---6e
+|   |       |   \---6eb5f25e88954437668815169da70e166e01f1923da37c70a141881fde1c10a6
+|   |       |           546c384b14b1c3bd3375d175ae5bcca3d77c33ba205ffdcf4f9505d9d2d6c9d8
+|   |       |           
+|   |       +---93
+|   |       |   \---93f920525155d089d307dcbeca55a442eba5aecc5fb89a7785c15a100639804a
+|   |       |           883332276c7be4b40516b99528a74796f056f5ed89c4e61fd02a6dda85a30a71
+|   |       |           
+|   |       +---ad
+|   |       |   \---ad7bf82d9a4c07edd1e1580bd803b89b0fd9c012e51f440a34f11c3b8d8cd22c
+|   |       |           5915217d5c7deb4019e06b1d93c1e11afeb6c4405cef3b75d317ae9cccd1d74e
+|   |       |           
+|   |       \---ae
+|   |           \---ae4482bf8605cbb45113f6eed97b16c23e1aa284d6f64af725178fb4869191f1
+|   |                   27852737cd2143a73907a06fa9bdfd642b8b73f3687c33b61ccb1be0bffe5181
+|   |                   
+|   \---tmp
+|           btime
+|           lock
+|           rwlock
+|           rwlock.lock
+|           
++---.github
+|   \---workflows
+|           cicd.yaml
+|           
++---artifacts
+|       city_global_mean.joblib
+|       city_mapping.joblib
+|       state_global_mean.joblib
+|       state_mapping.joblib
+|       
++---data
+|   |   test.json
+|   |   train.json
+|   |   
+|   +---processed
+|   |       .gitignore
+|   |       test_processed.csv
+|   |       train_processed.csv
+|   |       
+|   \---raw
+|           test.csv
+|           train.csv
+|           
++---docs
+|   |   .gitkeep
+|   |   mkdocs.yml
+|   |   README.md
+|   |   
+|   \---docs
+|           getting-started.md
+|           index.md
+|           
++---flask_api
+|   |   main.py
+|   |   
+|   \---templates
+|           index.html
+|           
++---metrics
+|       .gitignore
+|       validation_metrics.json
+|       
++---models
+|       .gitignore
+|       .gitkeep
+|       lightgbm_model.joblib
+|       
++---notebooks
+|   |   .gitkeep
+|   |   .jovianrc
+|   |   Risk_Flag_Class_Imbalance.ipynb
+|   |   Risk_flag_Preprocessing&EDA.ipynb
+|   |   Test_data_preprocessed.csv
+|   |   train_data_preprocessed.csv
+|   |   
+|   \---.ipynb_checkpoints
+|           riskflag notebook-checkpoint.ipynb
+|           Untitled-checkpoint.ipynb
+|           ZTH Hackathon-checkpoint.ipynb
+|           
++---plots
+|       .gitignore
+|       confusion_matrix_validation.png
+|       
++---predictions
+|       .gitignore
+|       test_predictions.csv
+|       
++---references
+|       .gitkeep
+|       
++---reports
+|   |   .gitkeep
+|   |   
+|   \---figures
+|           .gitkeep
+|           
++---src
+|   |   config.py
+|   |   dataset.py
+|   |   features.py
+|   |   plots.py
+|   |   __init__.py
+|   |   
+|   +---data
+|   |       data_ingestion.py
+|   |       data_preprocessing.py
+|   |       
+|   \---modeling
+|           model_building.py
+|           model_evaluation.py
+|           model_prediction.py
+|           model_register.py
+|           predict.py
+|           train.py
+|           __init__.py
+|           
+\---tests
+        test_data.py
+        
