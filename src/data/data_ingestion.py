@@ -104,6 +104,8 @@ def preprocess(df:pd.DataFrame) -> pd.DataFrame:
         df['stability_score'] = (df['current_job_yrs'] + df['current_house_yrs']) / df['age']
         df['income_to_age'] = df['income'] / df['age']
         ## KEeeping these features for model training: top_5_features = ['city_encoded', 'income_to_age', 'income_to_experience', 'stability_score', 'experience']
+        ##features we will use in our model
+        df=df['city_encoded', 'income_to_age', 'income_to_experience', 'stability_score', 'experience']
         logger.debug('Data preprocessing completed: So many things were happening wheew!!!')
         return df
 
@@ -113,4 +115,31 @@ def preprocess(df:pd.DataFrame) -> pd.DataFrame:
     except Exception as e:
         logger.error('Unexpected error during preprocessing: %s', e)
         raise
+def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str) -> None:
+    """Save the train and test datasets, creating the raw folder if it doesn't exist."""
+    try:
+        raw_data_path = os.path.join(data_path, 'raw')
+        
+        # Create the data/raw directory if it does not exist
+        os.makedirs(raw_data_path, exist_ok=True)
+        
+        # Save the train and test data
+        train_data.to_csv(os.path.join(raw_data_path, "train.csv"), index=False)
+        test_data.to_csv(os.path.join(raw_data_path, "test.csv"), index=False)
+        
+        logger.debug('Train and test data saved to %s', raw_data_path)
+    except Exception as e:
+        logger.error('Unexpected error occurred while saving the data: %s', e)
+        raise
 
+
+def main():
+    try:
+        df=load_data(link)
+        final_df=preprocess(df)
+        save_data(train_data, test_data, data_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data'))
+    except Exception as e:
+        logger.error('Failed to complete the data ingestion process: %s', e)
+        print(f"Error: {e}")
+if __name__=='main':
+    main()
