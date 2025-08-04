@@ -1,167 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Risk Flag Prediction</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #333;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        color: #333;
+      }
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+      .container {
+        width: 100%;
+        max-width: 500px;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: left;
-        }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: left;
+      }
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #555;
-        }
+      label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #555;
+      }
 
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+      }
 
-        input[type="text"]:focus, input[type="number"]:focus {
-            outline: none;
-            border-color: #3498db;
-        }
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        outline: none;
+        border-color: #3498db;
+      }
 
-        button {
-            background-color: #3498db;
-            color: #ffffff;
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            margin-top: 10px;
-        }
+      button {
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        margin-top: 10px;
+      }
 
-        button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
+      button:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+      }
 
-        .result-container {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #ecf0f1;
-        }
-        
-        .result-message {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
+      .result-container {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #ecf0f1;
+      }
 
-        .high-risk {
-            color: #e74c3c;
-        }
-        
-        .low-risk {
-            color: #27ae60;
-        }
+      .result-message {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
 
-        .result-value {
-            font-size: 18px;
-            color: #7f8c8d;
-        }
+      .high-risk {
+        color: #e74c3c;
+      }
+
+      .low-risk {
+        color: #27ae60;
+      }
+
+      .result-value {
+        font-size: 18px;
+        color: #7f8c8d;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>Risk Flag Prediction</h1>
-        <p>Enter the applicant's details below to predict their risk flag.</p>
+      <h1>Risk Flag Prediction</h1>
+      <p>Enter the applicant's details below to predict their risk flag.</p>
 
-        <form action="/predict" method="POST">
-            <div class="input-group">
-                <label for="income">Annual Income (₹):</label>
-                <input type="number" id="income" name="income" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="age">Age (years):</label>
-                <input type="number" id="age" name="age" required>
-            </div>
-
-            <div class="input-group">
-                <label for="experience">Work Experience (years):</label>
-                <input type="number" id="experience" name="experience" required>
-            </div>
-
-            <div class="input-group">
-                <label for="current_job_yrs">Years in Current Job:</label>
-                <input type="number" id="current_job_yrs" name="current_job_yrs" required>
-            </div>
-
-            <div class="input-group">
-                <label for="current_house_yrs">Years in Current House:</label>
-                <input type="number" id="current_house_yrs" name="current_house_yrs" required>
-            </div>
-
-            <div class="input-group">
-                <label for="city">City:</label>
-                <input type="text" id="city" name="city" required>
-            </div>
-
-            <div class="input-group">
-                <label for="state">State:</label>
-                <input type="text" id="state" name="state" required>
-            </div>
-
-            <button type="submit">Predict Risk</button>
-        </form>
-
-        {% if prediction_message %}
-        <div class="result-container">
-            <p class="result-message 
-                {% if result == 1 %}high-risk{% else %}low-risk{% endif %}">
-                {{ prediction_message }}
-            </p>
-            <p class="result-value">Raw Prediction: {{ result }}</p>
+      <form action="/predict" method="POST">
+        <div class="input-group">
+          <label for="income">Annual Income (₹):</label>
+          <input type="number" id="income" name="income" required />
         </div>
-        {% endif %}
+
+        <div class="input-group">
+          <label for="age">Age (years):</label>
+          <input type="number" id="age" name="age" required />
+        </div>
+
+        <div class="input-group">
+          <label for="experience">Work Experience (years):</label>
+          <input type="number" id="experience" name="experience" required />
+        </div>
+
+        <div class="input-group">
+          <label for="current_job_yrs">Years in Current Job:</label>
+          <input
+            type="number"
+            id="current_job_yrs"
+            name="current_job_yrs"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="current_house_yrs">Years in Current House:</label>
+          <input
+            type="number"
+            id="current_house_yrs"
+            name="current_house_yrs"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="city">City:</label>
+          <input list="city-options" id="city" name="city" required />
+          <datalist id="city-options">
+            <option value="bilaspur"></option>
+            <option value="amritsar"></option>
+            <option value="farrukhabad"></option>
+            <option value="mysore"></option>
+            <option value="bareilly"></option>
+            <option value="agartala"></option>
+            <option value="erode"></option>
+            <option value="uluberia"></option>
+            <option value="tenali"></option>
+            <option value="aizawl"></option>
+            <option value="giridih"></option>
+            <option value="aurangabad"></option>
+            <option value="ratlam"></option>
+            <option value="kharagpur"></option>
+            <option value="visakhapatnam"></option>
+            <option value="ballia"></option>
+            <option value="faridabad"></option>
+            <option value="thrissur"></option>
+            <option value="vijayawada"></option>
+            <option value="purnia"></option>
+            <option value="kurnool"></option>
+            <option value="malegaon"></option>
+            <option value="morbi"></option>
+            <option value="nandyal"></option>
+            <option value="ambala"></option>
+            <option value="saharanpur"></option>
+            <option value="dhule"></option>
+            <option value="hapur"></option>
+            <option value="dharmavaram"></option>
+            <option value="ichalkaranji"></option>
+            <option value="salem"></option>
+            <option value="bhopal"></option>
+            <option value="chapra"></option>
+            <option value="malda"></option>
+            <option value="junagadh"></option>
+            <option value="mango"></option>
+            <option value="nagercoil"></option>
+            <option value="jaunpur"></option>
+            <option value="jodhpur"></option>
+            <option value="aligarh"></option>
+            <option value="guntur"></option>
+            <option value="ahmednagar"></option>
+            <option value="maheshtala"></option>
+            <option value="nashik"></option>
+            <option value="ramagundam"></option>
+            <option value="mangalore"></option>
+            <option value="bangalore"></option>
+            <option value="jalna"></option>
+            <option value="allahabad"></option>
+            <option value="rajkot"></option>
+            <option value="ambarnath"></option>
+            <option value="thiruvananthapuram"></option>
+            <option value="bhagalpur"></option>
+            <option value="siliguri"></option>
+            <option value="bahraich"></option>
+            <option value="gulbarga"></option>
+            <option value="howrah"></option>
+            <option value="jalgaon"></option>
+            <option value="eluru"></option>
+            <option value="bharatpur"></option>
+            <option value="kakinada"></option>
+            <option value="sambhal"></option>
+            <option value="unnao"></option>
+            <option value="bhalswa_jahangir_pur"></option>
+            <option value="pune"></option>
+            <option value="raurkela_industrial_township"></option>
+            <option value="panipat"></option>
+            <option value="kavali"></option>
+            <option value="jorhat"></option>
+            <option value="kolkata"></option>
+            <option value="bijapur"></option>
+            <option value="fatehpur"></option>
+            <option value="nangloi_jat"></option>
+            <option value="hosur"></option>
+            <option value="nanded"></option>
+            <option value="danapur"></option>
+            <option value="jaipur"></option>
+            <option value="karaikudi"></option>
+            <option value="durg"></option>
+            <option value="thanjavur"></option>
+            <option value="navi_mumbai"></option>
+            <option value="gudivada"></option>
+            <option value="mau"></option>
+            <option value="jamshedpur"></option>
+            <option value="rajahmundry"></option>
+            <option value="dhanbad"></option>
+            <option value="lucknow"></option>
+            <option value="pali"></option>
+            <option value="bidar"></option>
+            <option value="moradabad"></option>
+            <option value="jamalpur"></option>
+            <option value="siwan"></option>
+            <option value="mehsana"></option>
+            <option value="bhimavaram"></option>
+            <option value="ujjain"></option>
+            <option value="ghaziabad"></option>
+            <option value="jehanabad"></option>
+            <option value="sirsa"></option>
+            <option value="satna"></option>
+            <option value="shimoga"></option>
+            <option value="kamarhati"></option>
+            <option value="saharsa"></option>
+            <option value="phagwara"></option>
+            <option value="dibrugarh"></option>
+            <option value="silchar"></option>
+            <option value="munger"></option>
+            <option value="ajmer"></option>
+            <option value="proddatur"></option>
+            <option value="vasai-virar"></option>
+            <option value="panihati"></option>
+            <option value="gorakhpur"></option>
+            <option value="hazaribagh"></option>
+            <option value="medininagar"></option>
+            <option value="gwalior"></option>
+            <option value="thane"></option>
+            <option value="bellary"></option>
+            <option value="bokaro"></option>
+            <option value="tiruchirappalli"></option>
+            <option value="mathura"></option>
+            <option value="shahjahanpur"></option>
+            <option value="sonipat"></option>
+            <option value="raebareli"></option>
+            <option value="avadi"></option>
+            <option value="anantapuram"></option>
+            <option value="warangal"></option>
+            <option value="korba"></option>
+            <option value="darbhanga"></option>
+            <option value="khora,_ghaziabad"></option>
+            <option value="amaravati"></option>
+            <option value="ramgarh"></option>
+            <option value="kulti"></option>
+            <option value="gurgaon"></option>
+            <option value="tiruvottiyur"></option>
+            <option value="ahmedabad"></option>
+            <option value="madurai"></option>
+            <option value="bikaner"></option>
+            <option value="pondicherry"></option>
+            <option value="sikar"></option>
+            <option value="hyderabad"></option>
+            <option value="bongaigaon"></option>
+            <option value="solapur"></option>
+            <option value="ongole"></option>
+            <option value="pudukkottai"></option>
+            <option value="bhilwara"></option>
+            <option value="udaipur"></option>
+            <option value="nagpur"></option>
+            <option value="coimbatore"></option>
+            <option value="berhampore"></option>
+            <option value="south_dumdum"></option>
+            <option value="rourkela"></option>
+            <option value="etawah"></option>
+            <option value="vijayanagaram"></option>
+            <option value="panvel"></option>
+            <option value="dewas"></option>
+            <option value="khandwa"></option>
+            <option value="nadiad"></option>
+            <option value="hindupur"></option>
+            <option value="cuttack"></option>
+            <option value="srinagar"></option>
+            <option value="kalyan-dombivli"></option>
+            <option value="bhubaneswar"></option>
+            <option value="arrah"></option>
+            <option value="tiruppur"></option>
+            <option value="phusro"></option>
+            <option value="parbhani"></option>
+            <option value="bidhannagar"></option>
+            <option value="bihar_sharif"></option>
+            <option value="davanagere"></option>
+            <option value="adoni"></option>
+            <option value="chennai"></option>
+            <option value="machilipatnam"></option>
+            <option value="jammu"></option>
+            <option value="surat"></option>
+            <option value="miryalaguda"></option>
+            <option value="jhansi"></option>
+            <option value="deoghar"></option>
+            <option value="patna"></option>
+            <option value="srikakulam"></option>
+            <option value="barasat"></option>
+            <option value="chittoor"></option>
+            <option value="jalandhar"></option>
+            <option value="haldia"></option>
+            <option value="tadipatri"></option>
+            <option value="haridwar"></option>
+            <option value="alappuzha"></option>
+            <option value="kochi"></option>
+            <option value="gangtok"></option>
+            <option value="amroha"></option>
+            <option value="delhi_city"></option>
+            <option value="nellore"></option>
+            <option value="tadepalligudem"></option>
+            <option value="buxar"></option>
+            <option value="indore"></option>
+            <option value="belgaum"></option>
+            <option value="rajpur_sonarpur"></option>
+            <option value="hubliâ€“dharwad"></option>
+            <option value="alwar"></option>
+            <option value="motihari"></option>
+            <option value="noida"></option>
+            <option value="gaya"></option>
+            <option value="karnal"></option>
+            <option value="dehradun"></option>
+            <option value="sri_ganganagar"></option>
+            <option value="north_dumdum"></option>
+            <option value="serampore"></option>
+            <option value="udupi"></option>
+            <option value="mirzapur"></option>
+            <option value="panchkula"></option>
+            <option value="bulandshahr"></option>
+            <option value="katihar"></option>
+            <option value="muzaffarpur"></option>
+            <option value="dehri"></option>
+            <option value="kirari_suleman_nagar"></option>
+            <option value="baranagar"></option>
+            <option value="kumbakonam"></option>
+            <option value="kottayam"></option>
+            <option value="imphal"></option>
+            <option value="jabalpur"></option>
+            <option value="guna"></option>
+            <option value="kota"></option>
+            <option value="anand"></option>
+            <option value="mahbubnagar"></option>
+            <option value="guwahati"></option>
+            <option value="new_delhi"></option>
+            <option value="katni"></option>
+            <option value="gopalpur"></option>
+            <option value="nagaon"></option>
+            <option value="ludhiana"></option>
+            <option value="rohtak"></option>
+            <option value="begusarai"></option>
+            <option value="mumbai"></option>
+            <option value="firozabad"></option>
+            <option value="bhiwani"></option>
+            <option value="jamnagar"></option>
+            <option value="tezpur"></option>
+            <option value="rampur"></option>
+            <option value="sagar"></option>
+            <option value="ulhasnagar"></option>
+            <option value="tumkur"></option>
+            <option value="orai"></option>
+            <option value="sasaram"></option>
+            <option value="raiganj"></option>
+            <option value="gandhinagar"></option>
+            <option value="varanasi"></option>
+            <option value="pimpri-chinchwad"></option>
+            <option value="chandigarh_city"></option>
+            <option value="kollam"></option>
+            <option value="khammam"></option>
+            <option value="hospet"></option>
+            <option value="bettiah"></option>
+            <option value="tinsukia"></option>
+            <option value="bhilai"></option>
+            <option value="kanpur"></option>
+            <option value="raipur"></option>
+            <option value="burhanpur"></option>
+            <option value="suryapet"></option>
+            <option value="berhampur"></option>
+            <option value="sultan_pur_majra"></option>
+            <option value="pallavaram"></option>
+            <option value="mira-bhayandar"></option>
+            <option value="chinsurah"></option>
+            <option value="ranchi"></option>
+            <option value="anantapur"></option>
+            <option value="sambalpur"></option>
+            <option value="durgapur"></option>
+            <option value="guntakal"></option>
+            <option value="shimla"></option>
+            <option value="madanapalle"></option>
+            <option value="bathinda"></option>
+            <option value="raichur"></option>
+            <option value="bally"></option>
+            <option value="vellore"></option>
+            <option value="karawal_nagar"></option>
+            <option value="naihati"></option>
+            <option value="hajipur"></option>
+            <option value="thoothukudi"></option>
+            <option value="karimnagar"></option>
+            <option value="surendranagar_dudhrej"></option>
+            <option value="morena"></option>
+            <option value="agra"></option>
+            <option value="nizamabad"></option>
+            <option value="singrauli"></option>
+            <option value="sangli-miraj_&_kupwad"></option>
+            <option value="bhatpara"></option>
+            <option value="bhusawal"></option>
+            <option value="patiala"></option>
+            <option value="loni"></option>
+            <option value="shivpuri"></option>
+            <option value="kolhapur"></option>
+            <option value="bhind"></option>
+            <option value="satara"></option>
+            <option value="amravati"></option>
+            <option value="tirupati"></option>
+            <option value="tirunelveli"></option>
+            <option value="asansol"></option>
+            <option value="latur"></option>
+            <option value="akola"></option>
+            <option value="yamunanagar"></option>
+            <option value="vadodara"></option>
+            <option value="bhavnagar"></option>
+            <option value="gandhidham"></option>
+            <option value="kadapa"></option>
+            <option value="ambattur"></option>
+            <option value="kozhikode"></option>
+            <option value="madhyamgram"></option>
+            <option value="dindigul"></option>
+            <option value="muzaffarnagar"></option>
+            <option value="rewa"></option>
+            <option value="chandrapur"></option>
+            <option value="bhiwandi"></option>
+            <option value="meerut"></option>
+            <option value="narasaraopet"></option>
+            <option value="secunderabad"></option>
+            <option value="kishanganj"></option>
+            <option value="ozhukarai"></option>
+            <option value="bardhaman"></option>
+          </datalist>
+        </div>
+
+        <div class="input-group">
+          <label for="state">State:</label>
+          <input list="state-options" id="state" name="state" required />
+          <datalist id="state-options">
+            <option value="chhattisgarh"></option>
+            <option value="punjab"></option>
+            <option value="uttar_pradesh"></option>
+            <option value="karnataka"></option>
+            <option value="tripura"></option>
+            <option value="tamil_nadu"></option>
+            <option value="west_bengal"></option>
+            <option value="andhra_pradesh"></option>
+            <option value="mizoram"></option>
+            <option value="jharkhand"></option>
+            <option value="bihar"></option>
+            <option value="madhya_pradesh"></option>
+            <option value="haryana"></option>
+            <option value="kerala"></option>
+            <option value="maharashtra"></option>
+            <option value="gujarat"></option>
+            <option value="rajasthan"></option>
+            <option value="telangana"></option>
+            <option value="delhi"></option>
+            <option value="odisha"></option>
+            <option value="assam"></option>
+            <option value="puducherry"></option>
+            <option value="jammu_and_kashmir"></option>
+            <option value="uttarakhand"></option>
+            <option value="sikkim"></option>
+            <option value="manipur"></option>
+            <option value="chandigarh"></option>
+            <option value="himachal_pradesh"></option>
+          </datalist>
+        </div>
+
+        <button type="submit">Predict Risk</button>
+      </form>
+
+      {% if prediction_message %}
+      <div class="result-container">
+        <p
+          class="result-message {% if result == 1 %}high-risk{% else %}low-risk{% endif %}"
+        >
+          {{ prediction_message }}
+        </p>
+        <p class="result-value">Raw Prediction: {{ result }}</p>
+      </div>
+      {% endif %}
     </div>
-</body>
+  </body>
 </html>
