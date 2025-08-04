@@ -1,0 +1,19 @@
+
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - src/data/data_ingestion.py
+    outs:
+    - data/raw/train.csv
+    - data/raw/test.csv
+
+  data_preprocessing:
+    cmd: python src/data/ data_preprocessing.py
+    deps:
+    - data/raw/train.csv
+    - data/raw/test.csv
+    - src/preprocess.py
+    outs:
+    - data/processed/train_processed.csv
+    - data/processed/test_processed.csv

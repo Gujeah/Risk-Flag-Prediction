@@ -20,6 +20,7 @@ dvc = {extras = ["s3"], version = "*"}
 numpy = "*"
 pandas = "*"
 seaborn = "*"
+category-encoders = "*"
 
 [dev-packages]
 
