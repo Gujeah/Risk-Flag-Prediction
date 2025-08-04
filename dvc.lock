@@ -73,8 +73,8 @@ stages:
       size: 4495444
     - path: src/modeling/model_evaluation.py
       hash: md5
-      md5: 6a08e9fcc940a4f4cabe7e287b324e9b
-      size: 5273
+      md5: 61d875d01a36d03ff886e723d61cdb7f
+      size: 7897
     outs:
     - path: metrics/validation_metrics.json
       hash: md5
@@ -82,8 +82,8 @@ stages:
       size: 192
     - path: plots/confusion_matrix_validation.png
       hash: md5
-      md5: 6bf332f07260c68de23572a088d2907d
-      size: 21079
+      md5: f0e75c9fd3fcba6351e887081d559e98
+      size: 21223
   model_prediction:
     cmd: python src/modeling/model_prediction.py
     deps:

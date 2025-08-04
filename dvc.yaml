@@ -39,6 +39,11 @@ stages:
     plots:
       - plots/confusion_matrix_validation.png
 
+  model_registration:
+    cmd: python src/modeling/model_register.py
+    deps:
+      - mlflow_run_info.json
+      - src/modeling/model_register.py
   model_prediction:
     cmd: python src/modeling/model_prediction.py
     deps:
