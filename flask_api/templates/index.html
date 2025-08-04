@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Flag Prediction</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+        }
+        
+        .result-message {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .high-risk {
+            color: #e74c3c;
+        }
+        
+        .low-risk {
+            color: #27ae60;
+        }
+
+        .result-value {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Risk Flag Prediction</h1>
+        <p>Enter the applicant's details below to predict their risk flag.</p>
+
+        <form action="/predict" method="POST">
+            <div class="input-group">
+                <label for="income">Annual Income (₹):</label>
+                <input type="number" id="income" name="income" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="age">Age (years):</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+
+            <div class="input-group">
+                <label for="experience">Work Experience (years):</label>
+                <input type="number" id="experience" name="experience" required>
+            </div>
+
+            <div class="input-group">
+                <label for="current_job_yrs">Years in Current Job:</label>
+                <input type="number" id="current_job_yrs" name="current_job_yrs" required>
+            </div>
+
+            <div class="input-group">
+                <label for="current_house_yrs">Years in Current House:</label>
+                <input type="number" id="current_house_yrs" name="current_house_yrs" required>
+            </div>
+
+            <div class="input-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+
+            <div class="input-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+
+            <button type="submit">Predict Risk</button>
+        </form>
+
+        {% if prediction_message %}
+        <div class="result-container">
+            <p class="result-message 
+                {% if result == 1 %}high-risk{% else %}low-risk{% endif %}">
+                {{ prediction_message }}
+            </p>
+            <p class="result-value">Raw Prediction: {{ result }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

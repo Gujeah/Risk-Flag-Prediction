@@ -6,6 +6,8 @@ import logging
 import os 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
+import joblib 
+import pickle
 
 # --- Logging configuration ---
 logger = logging.getLogger('data_preprocessing')
@@ -94,6 +96,7 @@ def save_data(df: pd.DataFrame, path: str) -> None:
         logger.error('Unexpected error occurred while saving the data: %s', e)
         raise
 
+# --- FIX: Modified the function to return all 4 values ---
 def cross_validated_target_encode(df_train: pd.DataFrame, y_train: pd.Series, df_test: pd.DataFrame, col: str, n_splits: int = 5) -> tuple:
     """Performs cross-validated target encoding for a given column."""
     oof_train = pd.Series(np.nan, index=df_train.index)
@@ -119,7 +122,7 @@ def cross_validated_target_encode(df_train: pd.DataFrame, y_train: pd.Series, df
     global_mean = y_train.mean()
     oof_test = oof_test.fillna(global_mean)
     
-    return oof_train, oof_test
+    return oof_train, oof_test, final_target_means, global_mean # Now returns 4 values
 
 if __name__ == '__main__':
     # --- DVC input/output paths ---
@@ -143,14 +146,29 @@ if __name__ == '__main__':
         # --- Test data has no target variable ---
         X_test_final = df_test_preprocessed.copy()
         
-        # --- Cross-Validated Target Encoding ---
-        X_train_full['city_encoded'], X_test_final['city_encoded'] = cross_validated_target_encode(
+        # --- FIX: Changed the function call to capture all 4 values ---
+        oof_train_city, oof_test_city, city_mapping, city_global_mean = cross_validated_target_encode(
             df_train=X_train_full, y_train=y_train_full, df_test=X_test_final, col='city'
         )
-        X_train_full['state_encoded'], X_test_final['state_encoded'] = cross_validated_target_encode(
+        X_train_full['city_encoded'] = oof_train_city
+        X_test_final['city_encoded'] = oof_test_city
+
+        oof_train_state, oof_test_state, state_mapping, state_global_mean = cross_validated_target_encode(
             df_train=X_train_full, y_train=y_train_full, df_test=X_test_final, col='state'
         )
+        X_train_full['state_encoded'] = oof_train_state
+        X_test_final['state_encoded'] = oof_test_state
 
+        # saving artifacts
+        artifacts_path = os.path.join(base_path, 'artifacts')
+        os.makedirs(artifacts_path, exist_ok=True)
+        
+        joblib.dump(city_mapping, os.path.join(artifacts_path, 'city_mapping.joblib'))
+        joblib.dump(city_global_mean, os.path.join(artifacts_path, 'city_global_mean.joblib'))
+        joblib.dump(state_mapping, os.path.join(artifacts_path, 'state_mapping.joblib'))
+        joblib.dump(state_global_mean, os.path.join(artifacts_path, 'state_global_mean.joblib'))
+        logger.info("Target encoding artifacts saved.")
+        
         # Perform Label Encoding on low-cardinality columns
         le_cols = ['married/single', 'house_ownership', 'car_ownership', 'profession_grouped']
         for col in le_cols:
@@ -159,7 +177,7 @@ if __name__ == '__main__':
                 X_train_full[col] = le.fit_transform(X_train_full[col])
                 if col in X_test_final.columns:
                     X_test_final[col] = le.transform(X_test_final[col])
-        
+
         # Final feature selection
         top_features = ['city_encoded', 'state_encoded', 'income_to_age', 'income_to_experience', 'stability_score', 'experience']
         X_train_final = X_train_full[top_features]
