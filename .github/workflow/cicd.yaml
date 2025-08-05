@@ -8,12 +8,13 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4 # Updated to latest version
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4 # Updated to latest version
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -21,41 +22,55 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2 # Updated to latest version
 
       - name: Build and tag the Docker image
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: latest
+          IMAGE_TAG: ${{ github.sha }} # Use commit SHA for better versioning
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_LATEST=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
 
       - name: Push Docker image to ECR
-        run: docker push ${{ env.IMAGE }}
+        run: |
+          docker push ${{ env.IMAGE }}
+          docker push ${{ env.IMAGE_LATEST }}
 
       - name: Deploy to AWS EC2
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3 # Use specific version
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22 # Explicitly set SSH port
+          timeout: 30s # Add timeout
           script: |
+            # Navigate to project directory
             cd /home/ubuntu/Risk-Flag-Prediction
 
+            # Pull the latest image
             docker pull ${{ env.IMAGE }}
 
+            # Stop and remove existing container
             docker stop risk-flag-app || true
             docker rm risk-flag-app || true
 
+            # Run new container
             docker run -d \
               --name risk-flag-app \
               -p 5000:5000 \
-              --restart always \
+              --restart unless-stopped \
               -v /home/ubuntu/Risk-Flag-Prediction/artifacts:/app/artifacts \
               -v /home/ubuntu/Risk-Flag-Prediction/models:/app/models \
               ${{ env.IMAGE }}
 
+            # Clean up old images
             docker image prune -f
+
+            # Verify container is running
+            docker ps | grep risk-flag-app
