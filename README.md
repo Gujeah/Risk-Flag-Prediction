@@ -80,7 +80,7 @@ This project serves as a practical demonstration of key MLOps principles, from e
 
 The project follows a standard MLOps lifecycle, as depicted in the workflow below:
 
-1.  **Model Development:** The data preprocessing and model training logic are defined in a Python script.
+1.  **Model Development:** The data preprocessing and model training logic are defined in a Python script...
 2.  **Experiment Tracking (MLflow):** Every model training run is tracked with MLflow to log parameters, metrics, and the model artifact.
 3.  **Model Registry (MLflow):** The best-performing model is registered in the MLflow Model Registry, where it is versioned and managed.
 4.  **CI/CD Trigger:** A push to the `main` branch of the GitHub repository triggers an automated CI/CD pipeline via GitHub Actions...
