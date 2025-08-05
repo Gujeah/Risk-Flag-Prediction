@@ -1,0 +1,1 @@
+477880153136.dkr.ecr.us-east-1.amazonaws.com/mlops-risk-project
