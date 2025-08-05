@@ -1,4 +1,4 @@
-name: workflow
+name: CI/CD Pipeline
 
 on:
   push:
@@ -47,22 +47,22 @@ jobs:
             # Assumes your project is cloned to /home/ubuntu/Risk-Flag-Prediction
             cd /home/ubuntu/Risk-Flag-Prediction
 
-            # Login to ECR on the EC2 instance
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
-
-            # Pull the latest Docker image from ECR
+            # Pull the latest Docker image from ECR.
+            # Your EC2 IAM role will handle authentication.
             docker pull ${{ env.IMAGE }}
 
             # Stop and remove the old container if it exists
             docker stop risk-flag-app || true
             docker rm risk-flag-app || true
 
-            # Run the new container with the latest image
+            # Run the new container with the latest image.
+            # Mount the correct `models` and `artifacts` directories.
             docker run -d \
               --name risk-flag-app \
               -p 5000:5000 \
               --restart always \
               -v /home/ubuntu/Risk-Flag-Prediction/artifacts:/app/artifacts \
+              -v /home/ubuntu/Risk-Flag-Prediction/models:/app/models \
               ${{ env.IMAGE }}
 
             # Remove old images to save disk space
