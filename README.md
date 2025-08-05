@@ -1,10 +1,10 @@
-# Risk Flag Prediction: An MLOps End-to-End Project- Am still finalising it to AWS, dear reviewr, give me 5 hours i will be done
+# Risk Flag Prediction: An MLOps End-to-End Project- Am still finalising it to AWS, dear reviewr, give me 5 hours i will be done as soon as possible.
 
 ## 📜 Introduction
 
 This project is an end-to-end Machine Learning Operations (MLOps) pipeline designed to predict credit risk. The goal is to build, deploy, and monitor a machine learning model that classifies loan applicants as "High Risk" or "Low Risk" based on their financial and demographic data.
 
-This project serves as a practical demonstration of key MLOps principles, from experiment tracking and model registration to automated deployment and continuous monitoring, using industry-standard tools like MLflow, Docker, and GitHub Actions.
+This project serves as a practical demonstration of key MLOps principles, from experiment tracking and model registration to automated deployment and continuous monitoring, using industry-standard tools like MLflow, Docker, and GitHub Actions...
 
 ## 📈 Project Workflow & Architecture
 
