@@ -61,6 +61,6 @@ jobs:
           
       - name: Build Complete
         run: |
-          echo "✅ Docker image built and pushed successfully!"
+          echo "Docker image built and pushed successfully!"
           echo "Image: ${{ env.IMAGE }}"
           echo "Latest: ${{ env.IMAGE_LATEST }}"

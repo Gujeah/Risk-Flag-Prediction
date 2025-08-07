@@ -1,4 +1,4 @@
-# Risk Flag Prediction: An MLOps End-to-End Project- Am still finalising it to AWS, dear reviewr, give me 5 hours i will be done as soon as possible.
+# Risk Flag Prediction: An MLOps End-to-End Project- Am still finalising it to AWS, dear reviewr, give me time until weekend i will be done as soon as possible.
 
 ## 📜 Introduction
 
