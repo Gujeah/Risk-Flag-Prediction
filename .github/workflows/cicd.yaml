@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline to EC2
 
 on:
   push:
@@ -6,61 +6,134 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-          
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        
-      - name: Build and tag the Docker image
+
+      - name: Build and tag Docker image
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Debug: Print variables to help troubleshoot
-          echo "ECR_REGISTRY: $ECR_REGISTRY"
-          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
-          echo "IMAGE_TAG: $IMAGE_TAG"
-          
-          # Validate required variables
-          if [ -z "$ECR_REGISTRY" ]; then
-            echo "Error: ECR_REGISTRY is empty"
-            exit 1
-          fi
-          if [ -z "$ECR_REPOSITORY" ]; then
-            echo "Error: ECR_REPOSITORY secret is not set or empty"
-            exit 1
-          fi
-          
-          # Build and tag the image
+          echo "Building Docker image..."
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           
-          # Set environment variables for next steps
           echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
           echo "IMAGE_LATEST=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
-          
+
       - name: Push Docker image to ECR
         run: |
           docker push ${{ env.IMAGE }}
           docker push ${{ env.IMAGE_LATEST }}
-          
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Logging into ECR..."
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+              docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+
+            echo "Pulling latest image..."
+            docker pull ${{ env.IMAGE_LATEST }}
+
+            echo "Stopping old container if it exists..."
+            docker stop my-app || true
+            docker rm my-app || true
+
+            echo "Running new container..."
+            docker run -d -p 80:80 --name my-app ${{ env.IMAGE_LATEST }}
+
       - name: Build Complete
-        run: |
-          echo "Docker image built and pushed successfully!"
-          echo "Image: ${{ env.IMAGE }}"
-          echo "Latest: ${{ env.IMAGE_LATEST }}"
+        run: echo "CI/CD pipeline executed successfully!"
+
+
+
+
+
+# name: CI/CD Pipeline
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+        
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+          
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v2
+        
+#       - name: Build and tag the Docker image
+#         id: build-image
+#         env:
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+#           IMAGE_TAG: ${{ github.sha }}
+#         run: |
+#           # Debug: Print variables to help troubleshoot
+#           echo "ECR_REGISTRY: $ECR_REGISTRY"
+#           echo "ECR_REPOSITORY: $ECR_REPOSITORY"
+#           echo "IMAGE_TAG: $IMAGE_TAG"
+          
+#           # Validate required variables
+#           if [ -z "$ECR_REGISTRY" ]; then
+#             echo "Error: ECR_REGISTRY is empty"
+#             exit 1
+#           fi
+#           if [ -z "$ECR_REPOSITORY" ]; then
+#             echo "Error: ECR_REPOSITORY secret is not set or empty"
+#             exit 1
+#           fi
+          
+#           # Build and tag the image
+#           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
+#           # Set environment variables for next steps
+#           echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+#           echo "IMAGE_LATEST=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
+          
+#       - name: Push Docker image to ECR
+#         run: |
+#           docker push ${{ env.IMAGE }}
+#           docker push ${{ env.IMAGE_LATEST }}
+          
+#       - name: Build Complete
+#         run: |
+#           echo "Docker image built and pushed successfully!"
+#           echo "Image: ${{ env.IMAGE }}"
+#           echo "Latest: ${{ env.IMAGE_LATEST }}"
