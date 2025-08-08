@@ -25,7 +25,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and tag Docker image
-        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -34,69 +33,42 @@ jobs:
           echo "Building Docker image..."
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-
-          echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-          echo "IMAGE_LATEST=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
+          echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_ENV
 
       - name: Push Docker image to ECR
         run: |
           docker push ${{ env.IMAGE }}
-          docker push ${{ env.IMAGE_LATEST }}
 
-      - name: Deploy to EC2 via SSH
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: AWS_REGION,ECR_REGISTRY,ECR_REPOSITORY
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        script: |
-          echo "=== Starting deployment ==="
+          script: |
+            echo "Starting deployment..."
 
-          # Set image name
-          IMAGE_LATEST="${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
-          echo "Image to deploy: $IMAGE_LATEST"
+            IMAGE_NAME="${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest"
+            echo "Deploying image: $IMAGE_NAME"
 
-          # Configure AWS CLI (if not already configured)
-          if ! aws sts get-caller-identity > /dev/null 2>&1; then
-            echo "Configuring AWS CLI..."
             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws configure set default.region ${{ secrets.AWS_REGION }}
-          fi
 
-          echo "Logging into ECR..."
-          aws ecr get-login-password --region ${AWS_REGION} | \
-            docker login --username AWS --password-stdin ${ECR_REGISTRY}
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
 
-          echo "Pulling latest image..."
-          docker pull ${IMAGE_LATEST}
+            docker pull $IMAGE_NAME
 
-          echo "Stopping old container if it exists..."
-          docker stop my-app || true
-          docker rm my-app || true
+            docker stop my-app || true
+            docker rm my-app || true
 
-          echo "Running new container..."
-          docker run -d -p 5000:5000 --name my-app --restart unless-stopped ${IMAGE_LATEST}
+            docker run -d -p 5000:5000 --name my-app --restart unless-stopped $IMAGE_NAME
 
-          echo "Checking if container is running..."
-          docker ps | grep my-app
+            docker ps | grep my-app
+            echo "Deployment completed!"
 
-          echo "Cleaning up old images..."
-          docker image prune -f
-
-          echo "=== Deployment completed successfully ==="
-
-      - name: Verify Deployment
-        run: |
-          echo "✅ CI/CD pipeline executed successfully!"
-          echo "🚀 Application deployed to: http://${{ secrets.EC2_HOST }}:5000"
-          echo "📦 Image: ${{ env.IMAGE_LATEST }}"
-
+      - name: Success
+        run: echo "Pipeline completed successfully!"
 # name: CI/CD Pipeline
 
 # on:
