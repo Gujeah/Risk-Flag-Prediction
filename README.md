@@ -1,10 +1,26 @@
-# Risk Flag Prediction: An MLOps End-to-End Project- Am still finalising it to AWS, dear reviewr, give me time until weekend i will be done as soon as possible.
+# Risk Flag Prediction: An MLOps End-to-End Project
+
+![Project Banner](risk-flag-image.jpeg)
+![Step 1](https://img.shields.io/badge/Step%201-Data%20Loading-blue)
+![Step 2](https://img.shields.io/badge/Step%202-Preprocessing-orange)
+![Step 3](https://img.shields.io/badge/Step%203-Experiment%20Tracking-yellow)
+![Step 4](https://img.shields.io/badge/Step%204-Model%20Training-green)
+![Step 5](https://img.shields.io/badge/Step%205-CI%2FCD%20Pipeline-lightgrey)
+![Step 6](https://img.shields.io/badge/Step%206-Deployment-purple)
+![Step 7](https://img.shields.io/badge/Step%207-Monitoring-red)
 
 ## 📜 Introduction
 
 This project is an end-to-end Machine Learning Operations (MLOps) pipeline designed to predict credit risk. The goal is to build, deploy, and monitor a machine learning model that classifies loan applicants as "High Risk" or "Low Risk" based on their financial and demographic data like cities, states.--
 
-This project serves as a practical demonstration of key MLOps principles, from experiment tracking and model registration to automated deployment and continuous monitoring, using industry-standard tools like MLflow, Docker, and GitHub Actions.(1)
+The primary objective is to classify loan applicants as **High Risk** or **Low Risk** based on their financial and demographic data (e.g., cities, states).  
+It demonstrates **MLOps best practices** such as:
+
+- Automated CI/CD pipelines with **GitHub Actions**
+- **Experiment tracking** and model registry via MLflow
+- Containerization with **Docker**
+- Deployment to AWS **(ECR + EC2)**
+- Continuous monitoring and performance tracking using **grafana**
 
 ## 📈 Project Workflow & Architecture
 
@@ -164,5 +180,5 @@ To ensure your application works correctly before a full deployment, you can bui
     docker run -d -p 5000:5000 --name my-risk-app risk-flag-app
     ```
 
-3.  **Access the web interface:**
-    - Open your web browser and navigate to `http://localhost:5000`.
+3.  **Deployment:**
+    - Flask app was deployed on AWS platform
