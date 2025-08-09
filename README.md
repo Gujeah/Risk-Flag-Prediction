@@ -1,6 +1,8 @@
 # Risk Flag Prediction: An MLOps End-to-End Project
 
-![Project Banner](risk-flag-image.jpeg)
+<img src="Risk-Flag-Prediction/risk-flag-image.jpeg" alt="Project Banner" style="width:100%; height:auto;"/>
+
+
 ![Step 1](https://img.shields.io/badge/Step%201-Data%20Loading-blue)
 ![Step 2](https://img.shields.io/badge/Step%202-Preprocessing-orange)
 ![Step 3](https://img.shields.io/badge/Step%203-Experiment%20Tracking-yellow)
