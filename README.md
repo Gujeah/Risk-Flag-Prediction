@@ -2,7 +2,6 @@
 
 <img src="Risk-Flag-Prediction/risk-flag-image.jpeg" alt="Project Banner" style="width:100%; height:auto;"/>
 
-
 ![Step 1](https://img.shields.io/badge/Step%201-Data%20Loading-blue)
 ![Step 2](https://img.shields.io/badge/Step%202-Preprocessing-orange)
 ![Step 3](https://img.shields.io/badge/Step%203-Experiment%20Tracking-yellow)
@@ -13,7 +12,7 @@
 
 ## 📜 Introduction
 
-This project is an end-to-end Machine Learning Operations (MLOps) pipeline designed to predict credit risk. The goal is to build, deploy, and monitor a machine learning model that classifies loan applicants as "High Risk" or "Low Risk" based on their financial and demographic data like cities, states.--
+This project is an end-to-end Machine Learning Operations (MLOps) pipeline designed to predict credit risk. The goal is to build, deploy, and monitor a machine learning model that classifies loan applicants as "High Risk" or "Low Risk" based on their financial and demographic data like cities, states.
 
 The primary objective is to classify loan applicants as **High Risk** or **Low Risk** based on their financial and demographic data (e.g., cities, states).  
 It demonstrates **MLOps best practices** such as:
@@ -183,4 +182,19 @@ To ensure your application works correctly before a full deployment, you can bui
     ```
 
 3.  **Deployment:**
+
     - Flask app was deployed on AWS platform
+
+4.  **Tools & Technologies**
+
+    - Machine Learning: LightGBM, Pandas, Scikit-learn
+
+    - Experiment Tracking: MLflow
+
+    - Containerization: Docker
+
+    - CI/CD: GitHub Actions
+
+    - Cloud: AWS ECR, AWS EC2
+
+    - API Framework: Flask
