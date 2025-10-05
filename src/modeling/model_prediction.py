@@ -57,14 +57,14 @@ def save_predictions(predictions: pd.DataFrame, path: str) -> None:
         raise
 
 if __name__ == '__main__':
-    # --- DVC input/output paths ---
+    # -DVC input/output paths 
     base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
     model_path = os.path.join(base_path, 'models/lightgbm_model.joblib')
     processed_data_path = os.path.join(base_path, 'data/processed/')
     predictions_path = os.path.join(base_path, 'predictions/test_predictions.csv')
 
     try:
-        # Load the processed test data (features only)
+        # Load the processed test data
         df_test = load_data('test_processed.csv', processed_data_path)
         X_test = df_test.copy()
 

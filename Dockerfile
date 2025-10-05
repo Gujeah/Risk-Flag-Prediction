@@ -45,5 +45,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENV FLASK_APP=flask_api/main.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
-# Use gunicorn with proper configuration
+# Using gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "120", "--max-requests", "1000", "flask_api.main:app"]

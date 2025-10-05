@@ -69,7 +69,7 @@ def main():
     try:
         root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
         
-        # The new path for the MLflow run info file
+        # The path for the MLflow run info file
         model_info_path = os.path.join(root_dir, 'mlflow_run_info.json') 
         model_info = load_model_info(model_info_path)
         

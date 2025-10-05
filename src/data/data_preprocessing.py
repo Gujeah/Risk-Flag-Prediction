@@ -96,7 +96,6 @@ def save_data(df: pd.DataFrame, path: str) -> None:
         logger.error('Unexpected error occurred while saving the data: %s', e)
         raise
 
-# --- FIX: Modified the function to return all 4 values ---
 def cross_validated_target_encode(df_train: pd.DataFrame, y_train: pd.Series, df_test: pd.DataFrame, col: str, n_splits: int = 5) -> tuple:
     """Performs cross-validated target encoding for a given column."""
     oof_train = pd.Series(np.nan, index=df_train.index)
@@ -125,7 +124,7 @@ def cross_validated_target_encode(df_train: pd.DataFrame, y_train: pd.Series, df
     return oof_train, oof_test, final_target_means, global_mean # Now returns 4 values
 
 if __name__ == '__main__':
-    # --- DVC input/output paths ---
+    # DVC input/output paths 
     base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
     dvc_raw_path = os.path.join(base_path, 'data/raw')
     dvc_processed_path = os.path.join(base_path, 'data/processed')
@@ -139,14 +138,12 @@ if __name__ == '__main__':
         df_train_preprocessed = preprocess(df_train_raw)
         df_test_preprocessed = preprocess(df_test_raw)
         
-        # --- Split features and target for training data ---
+        # Split features and target for training data 
         X_train_full = df_train_preprocessed.drop('risk_flag', axis=1)
         y_train_full = df_train_preprocessed['risk_flag']
         
-        # --- Test data has no target variable ---
         X_test_final = df_test_preprocessed.copy()
         
-        # --- FIX: Changed the function call to capture all 4 values ---
         oof_train_city, oof_test_city, city_mapping, city_global_mean = cross_validated_target_encode(
             df_train=X_train_full, y_train=y_train_full, df_test=X_test_final, col='city'
         )

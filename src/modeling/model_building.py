@@ -7,7 +7,7 @@ import pandas as pd
 import yaml
 from lightgbm import LGBMClassifier
 
-# --- Logging configuration ---
+#Logging configuration
 logger = logging.getLogger('model_building')
 logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler()
@@ -35,7 +35,7 @@ def load_data(file_name: str, path: str) -> pd.DataFrame:
         raise
 
 if __name__ == '__main__':
-    # --- DVC input/output paths ---
+    # DVC input/output paths
     base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
     model_save_path = os.path.join(base_path, 'models/lightgbm_model.joblib')
     params_path = os.path.join(base_path, 'params.yaml')

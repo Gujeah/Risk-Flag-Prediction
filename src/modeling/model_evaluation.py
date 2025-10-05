@@ -79,7 +79,7 @@ def evaluate_model_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.nd
     logger.info('Model evaluation metrics calculated.')
     return metrics
 
-# New function to save metrics to a local file
+# function to save metrics to a local file
 def save_metrics(metrics: dict, path: str) -> None:
     """Saves evaluation metrics to a JSON file for DVC."""
     try:
